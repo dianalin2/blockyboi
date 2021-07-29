@@ -1,0 +1,19 @@
+{
+  "name": "blockyboi",
+  "version": "1.0.0",
+  "description": "three.js practice",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Diana Lin",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dianalin2/blockyboi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dianalin2/blockyboi/issues"
+  },
+  "homepage": "https://github.com/dianalin2/blockyboi#readme"
+}
