@@ -1,12 +1,17 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const mode = process.env.NODE_ENV || 'development';
+const mode = process.env.NODE_ENV || 'production';
 
 module.exports = {
     entry: './src/client/index.ts',
     mode: mode,
     devtool: mode === 'development' ? 'inline-source-map' : false,
+
+    devServer: mode === 'development' ? {
+        contentBase: './dist/client',
+        hot: true,
+    } : undefined,
 
     resolve: {
         alias: {
