@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackBundleAnalyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const mode = process.env.NODE_ENV || 'production';
 
@@ -9,7 +10,7 @@ module.exports = {
     devtool: mode === 'development' ? 'inline-source-map' : false,
 
     devServer: mode === 'development' ? {
-        contentBase: './dist/client',
+        contentBase: path.resolve(__dirname, '../../dist/client'),
         hot: true,
     } : undefined,
 
@@ -28,7 +29,7 @@ module.exports = {
     },
 
     output: {
-        filename: 'bundle.js',
+        filename: '[name].bundle.js',
         path: path.resolve(__dirname, '../../dist/client')
     },
 
@@ -36,6 +37,19 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'blockyboi',
             template: path.resolve(__dirname, 'index.ejs')
-        })
+        }),
+        new WebpackBundleAnalyzer()
     ],
+
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendors: {
+                    test: /node_modules/,
+                    name: 'vendor',
+                    chunks: 'all'
+                }
+            }
+        }
+    }
 }
