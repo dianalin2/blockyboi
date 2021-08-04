@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { Game } from "./Game";
-import { VoxelWorld } from "./VoxelWorld";
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xA9BCD0);
@@ -28,40 +27,33 @@ import { Block } from "./Block";
 Block.loadBlockDataFromJSON(data);
 
 const game = new Game({ x: 7, y: 12, z: 7 }, scene);
-// const world = new VoxelWorld(game);
-// const geometry = new THREE.BufferGeometry();
-// const material = new THREE.MeshLambertMaterial({ color: 0x373F51 });
-// const mesh = new THREE.Mesh(geometry, material);
 
-// const material = new THREE.LineBasicMaterial({ color: 0x373F51, linewidth: 2 });
-// const mesh = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), material);
-
-const updatePos = () => {
-  for (const k of keysDown) {
-    if (k.isDown) {
-      switch (k.key) {
-        case 'w':
-          camera.translateOnAxis(new THREE.Vector3(0, 0, 1), -0.1);
-          break;
-        case 'a':
-          camera.translateOnAxis(new THREE.Vector3(1, 0, 0), -0.1);
-          break;
-        case 's':
-          camera.translateOnAxis(new THREE.Vector3(0, 0, 1), 0.1);
-          break;
-        case 'd':
-          camera.translateOnAxis(new THREE.Vector3(1, 0, 0), 0.1);
-          break;
-        case 'q':
-          camera.position.y += 0.1;
-          break;
-        case 'e':
-          camera.position.y -= 0.1;
-          break;
-      }
-    }
-  }
-}
+// const updatePos = () => {
+//   for (const k of keysDown) {
+//     if (k.isDown) {
+//       switch (k.key) {
+//         case 'w':
+//           camera.translateOnAxis(new THREE.Vector3(0, 0, 1), -0.1);
+//           break;
+//         case 'a':
+//           camera.translateOnAxis(new THREE.Vector3(1, 0, 0), -0.1);
+//           break;
+//         case 's':
+//           camera.translateOnAxis(new THREE.Vector3(0, 0, 1), 0.1);
+//           break;
+//         case 'd':
+//           camera.translateOnAxis(new THREE.Vector3(1, 0, 0), 0.1);
+//           break;
+//         case 'q':
+//           camera.position.y += 0.1;
+//           break;
+//         case 'e':
+//           camera.position.y -= 0.1;
+//           break;
+//       }
+//     }
+//   }
+// }
 
 
 function addLight(x: number, y: number, z: number) {
@@ -76,53 +68,13 @@ addLight( 1, -1, -2);
 
 const animate = () => {
   requestAnimationFrame(animate);
-  updatePos();
+  // updatePos();
   game.render();
   render();
 };
 
 camera.position.set(-5.165, 19.47, 10.905);
 camera.rotation.set(-0.843, -0.5, -0.5);
-
-const keysDown = [
-  {
-    key: 'w',
-    isDown: false
-  },
-  {
-    key: 'a',
-    isDown: false
-  },
-  {
-    key: 's',
-    isDown: false
-  },
-  {
-    key: 'd',
-    isDown: false
-  },
-  {
-    key: 'q',
-    isDown: false
-  },
-  {
-    key: 'e',
-    isDown: false
-  },
-
-]
-
-document.onkeydown = (e) => {
-  const k = keysDown.filter(v => e.key == v.key)[0];
-  if (k)
-    k.isDown = true;
-}
-
-document.onkeyup = (e) => {
-  const k = keysDown.filter(v => e.key == v.key)[0];
-  if (k)
-    k.isDown = false;
-}
 
 let mouseIsDown = false;
 

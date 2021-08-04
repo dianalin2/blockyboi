@@ -81,6 +81,7 @@ export class VoxelWorld {
     }
 
     render() {
+        // TODO DISPOSE
         const { positions, normals, indices } = this.generateGeometryData();
 
         this.geometry.setAttribute(

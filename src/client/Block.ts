@@ -99,11 +99,17 @@ export class Block {
         this.location.y--;
     }
 
+    translate(x: number, z: number) {
+        this.location.x += x;
+        this.location.z += z;
+    }
+
     rotate() {
         // TODO
     }
 
     render() {
+        // TODO DISPOSE
         const geoData = this.generateGeometryData();
          
         this.positions = geoData.positions;

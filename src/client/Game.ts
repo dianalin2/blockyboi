@@ -1,6 +1,7 @@
 import { VoxelWorld } from "./VoxelWorld";
 import { Block } from "./Block";
 import { Scene } from "three";
+import { Controller } from "./Controller";
 
 export interface Vector3D {
     x: number;
@@ -51,6 +52,8 @@ export class Game {
         this.scene.add(this.currentBlock.mesh);
 
         setInterval(this.tick.bind(this), 300);
+
+        new Controller(this);
     }
 
     render() {
@@ -67,9 +70,7 @@ export class Game {
     }
 
     tick() {
-        const { shouldPlaceDown, oldBlock } = this.checkCurrentBlockLocation();
-        if (shouldPlaceDown) {
-            oldBlock.location
+        if (this.checkCurrentBlockLocation({x: 0, y: -1, z: 0})) {
             for (let x = 0; x < this.currentBlock.dimensions.length; x++) {
                 for (let y = 0; y < this.currentBlock.dimensions[x].length; y++) {
                     for (let z = 0; z < this.currentBlock.dimensions[x][y].length; z++) {
@@ -93,24 +94,24 @@ export class Game {
         }
     }
 
-    // Returns true if old block is placed
-    checkCurrentBlockLocation() {
+    // Returns true if block would collide
+    checkCurrentBlockLocation(offset: Vector3D) {
         for (let x = 0; x < this.currentBlock.dimensions.length; x++) {
             for (let y = 0; y < this.currentBlock.dimensions.length; y++) {
                 for (let z = 0; z < this.currentBlock.dimensions[x][y].length; z++) {
                     const cellBelow = this.getCell({
-                        x: this.currentBlock.location.x + x,
-                        y: this.currentBlock.location.y + y - 1,
-                        z: this.currentBlock.location.z + z
+                        x: this.currentBlock.location.x + x + offset.x,
+                        y: this.currentBlock.location.y + y + offset.y,
+                        z: this.currentBlock.location.z + z + offset.z
                     });
                     if ((this.currentBlock.dimensions[x][y][z] && cellBelow && cellBelow.hasBlock) || this.currentBlock.location.y == 0) {
-                        return { shouldPlaceDown: true, oldBlock: this.currentBlock };
+                        return true;
                     }
                 }
             }
         }
 
-        return { shouldPlaceDown: false, oldBlock: null };
+        return false;
     }
 
     rotateBlock() {
@@ -119,6 +120,7 @@ export class Game {
 
     // Returns old block
     placeBlock() {
+        // TODO DISPOSE
         const oldBlock = this.currentBlock;
         this.scene.remove(this.currentBlock.mesh);
 
@@ -128,5 +130,21 @@ export class Game {
         this.scene.add(this.currentBlock.mesh);
 
         return oldBlock;
+    }
+
+    blockIsInBounds(offsetX: number, offsetZ: number) {
+        const xPos = this.currentBlock.location.x + offsetX;
+        const xSize = this.currentBlock.dimensions.length;
+
+        const zPos = this.currentBlock.location.z + offsetZ;
+        const zSize = this.currentBlock.dimensions[0][0].length;
+
+        return xPos >= 0 && xPos + xSize < this.size.x && zPos >= 0 && zPos + zSize < this.size.z;
+    }
+
+    translateBlock(x: number, z: number) {
+        if (!this.checkCurrentBlockLocation({x: x, y: 0, z: z}) && this.blockIsInBounds(x, z)) {
+            this.currentBlock.translate(x, z);
+        }
     }
 }

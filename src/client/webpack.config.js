@@ -38,7 +38,7 @@ module.exports = {
             title: 'blockyboi',
             template: path.resolve(__dirname, 'index.ejs')
         }),
-        new WebpackBundleAnalyzer()
+        // new WebpackBundleAnalyzer()
     ],
 
     optimization: {
