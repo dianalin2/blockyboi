@@ -1,8 +1,12 @@
+import { BufferAttribute, BufferGeometry, Mesh, MeshLambertMaterial } from "three";
 import { Game, Vector3D } from "./Game";
 
 export class VoxelWorld {
     size: Vector3D;
     game: Game;
+    geometry: BufferGeometry;
+    material: MeshLambertMaterial;
+    mesh: Mesh;
 
     static faces = [
         {
@@ -70,6 +74,24 @@ export class VoxelWorld {
     constructor(game: Game) {
         this.game = game;
         this.size = game.size;
+
+        this.geometry = new BufferGeometry();
+        this.material = new MeshLambertMaterial({ color: 0x373F51 });
+        this.mesh = new Mesh(this.geometry, this.material);
+    }
+
+    render() {
+        const { positions, normals, indices } = this.generateGeometryData();
+
+        this.geometry.setAttribute(
+          'position',
+          new BufferAttribute(new Float32Array(positions), 3)
+        );
+        this.geometry.setAttribute(
+          'normal',
+          new BufferAttribute(new Float32Array(normals), 3)
+        );
+        this.geometry.setIndex(indices);
     }
 
     generateGeometryData() {

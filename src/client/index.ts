@@ -23,30 +23,18 @@ function render() {
   renderer.render(scene, camera);
 }
 
-const game = new Game({ x: 16, y: 32, z: 16 });
-const world = new VoxelWorld(game);
-const geometry = new THREE.BufferGeometry();
-const material = new THREE.MeshLambertMaterial({ color: 0x373F51 });
-const mesh = new THREE.Mesh(geometry, material);
+import data from './BlockData.json';
+import { Block } from "./Block";
+Block.loadBlockDataFromJSON(data);
+
+const game = new Game({ x: 7, y: 12, z: 7 }, scene);
+// const world = new VoxelWorld(game);
+// const geometry = new THREE.BufferGeometry();
+// const material = new THREE.MeshLambertMaterial({ color: 0x373F51 });
+// const mesh = new THREE.Mesh(geometry, material);
 
 // const material = new THREE.LineBasicMaterial({ color: 0x373F51, linewidth: 2 });
 // const mesh = new THREE.LineSegments(new THREE.WireframeGeometry(geometry), material);
-
-scene.add(mesh);
-
-const updateGame = () => {
-  const { positions, normals, indices } = world.generateGeometryData();
-
-  geometry.setAttribute(
-    'position',
-    new THREE.BufferAttribute(new Float32Array(positions), 3)
-  );
-  geometry.setAttribute(
-    'normal',
-    new THREE.BufferAttribute(new Float32Array(normals), 3)
-  );
-  geometry.setIndex(indices);
-}
 
 const updatePos = () => {
   for (const k of keysDown) {
@@ -86,16 +74,15 @@ function addLight(x: number, y: number, z: number) {
 addLight(-1,  2,  4);
 addLight( 1, -1, -2);
 
-let currRot = 0;
 const animate = () => {
   requestAnimationFrame(animate);
-  currRot += 0.01;
   updatePos();
-  updateGame();
+  game.render();
   render();
 };
 
-camera.position.z = 5;
+camera.position.set(-5.165, 19.47, 10.905);
+camera.rotation.set(-0.843, -0.5, -0.5);
 
 const keysDown = [
   {
