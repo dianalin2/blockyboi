@@ -76,22 +76,28 @@ export class VoxelWorld {
         this.size = game.size;
 
         this.geometry = new BufferGeometry();
-        this.material = new MeshLambertMaterial({ color: 0x373F51 });
+        this.material = new MeshLambertMaterial({ vertexColors: true });
         this.mesh = new Mesh(this.geometry, this.material);
     }
 
     render() {
         // TODO DISPOSE
-        const { positions, normals, indices } = this.generateGeometryData();
+        const { positions, normals, indices, colors } = this.generateGeometryData();
 
         this.geometry.setAttribute(
-          'position',
-          new BufferAttribute(new Float32Array(positions), 3)
+            'position',
+            new BufferAttribute(new Float32Array(positions), 3)
         );
         this.geometry.setAttribute(
-          'normal',
-          new BufferAttribute(new Float32Array(normals), 3)
+            'normal',
+            new BufferAttribute(new Float32Array(normals), 3)
         );
+
+        this.geometry.setAttribute(
+            'color',
+            new BufferAttribute(new Uint8Array(colors), 3, true)
+        );
+
         this.geometry.setIndex(indices);
     }
 
@@ -99,6 +105,7 @@ export class VoxelWorld {
         const positions = [];
         const normals = [];
         const indices = [];
+        const colors = [];
 
         for (let y = 0; y < this.size.y; ++y) {
             for (let z = 0; z < this.size.z; ++z) {
@@ -119,6 +126,7 @@ export class VoxelWorld {
                                 for (const pos of corners) {
                                     positions.push(pos.x + x, pos.y + y, pos.z + z);
                                     normals.push(dir.x, dir.y, dir.z);
+                                    colors.push((cell.colorHex >> 16) % 256, (cell.colorHex >> 8) % 256, (cell.colorHex >> 0) % 256);
                                 }
 
                                 indices.push(ndx, ndx + 1, ndx + 2, ndx + 2, ndx + 1, ndx + 3);
@@ -132,7 +140,8 @@ export class VoxelWorld {
         return {
             positions: positions,
             normals: normals,
-            indices: indices
+            indices: indices,
+            colors: colors
         };
     }
 }

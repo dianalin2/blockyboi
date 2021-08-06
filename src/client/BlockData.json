@@ -10,7 +10,8 @@
                 [0, 0, 0]
             ]
         ],
-        "center": [0, 0, 1]
+        "center": [0, 0, 1],
+        "colorHex": "0x109391"
     },
     {
         "dimensions": [
@@ -23,7 +24,8 @@
                 [0, 0, 0]
             ]
         ],
-        "center": [0, 0, 1]
+        "center": [0, 0, 1],
+        "colorHex": "0xF78154"
     },
     {
         "dimensions": [
@@ -36,7 +38,8 @@
                 [1, 1]
             ]
         ],
-        "center": [0, 0, 0]
+        "center": [0, 0, 0],
+        "colorHex": "0xFFE15C"
     },
     {
         "dimensions": [
@@ -44,6 +47,7 @@
                 [1, 1, 1, 1, 1]
             ]
         ],
-        "center": [0, 0, 2]
+        "center": [0, 0, 2],
+        "colorHex": "0x05B384"
     }
 ]

@@ -12,7 +12,7 @@ export interface Vector3D {
 export interface Cell {
     location: Vector3D;
     hasBlock: boolean;
-    colorHex: string;
+    colorHex: number;
 }
 
 export class Game {
@@ -79,8 +79,11 @@ export class Game {
                     z: this.currentBlock.location.z + z
                 };
                 const voxelCell = this.getCell(cellLocation);
-                if (voxelCell)
+                if (voxelCell) { 
+                    console.log(this.currentBlock.colorHex)
                     voxelCell.hasBlock = true;
+                    voxelCell.colorHex = this.currentBlock.colorHex;
+                }
             }
 
             this.placeBlock();

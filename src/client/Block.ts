@@ -6,6 +6,7 @@ import { BufferGeometry, MeshLambertMaterial, Mesh, BufferAttribute } from "thre
 interface BlockData {
     dimensions: number[][][];
     center: number[];
+    colorHex: string;
 }
 
 export class Block {
@@ -24,7 +25,9 @@ export class Block {
     indices: number[];
     positions: number[];
 
-    constructor(dimensions: number[][][], center: Vector3D, spawnLocation: Vector3D) {
+    colorHex: number;
+
+    constructor(dimensions: number[][][], center: Vector3D, spawnLocation: Vector3D, colorHex: number) {
         let minX = Infinity, maxX = -Infinity;
         let minY = Infinity, maxY = -Infinity;
         let minZ = Infinity, maxZ = -Infinity;
@@ -32,7 +35,7 @@ export class Block {
             for (let y = 0; y < dimensions[x].length; y++) {
                 for (let z = 0; z < dimensions[x][y].length; z++) {
                     if (dimensions[x][y][z]) {
-                        this.cells.push({ location: { x: x, y: y, z: z }, hasBlock: true, colorHex: null });
+                        this.cells.push({ location: { x: x, y: y, z: z }, hasBlock: true, colorHex: colorHex });
 
                         minX = Math.min(minX, x);
                         minY = Math.min(minY, y);
@@ -59,14 +62,15 @@ export class Block {
 
         this.geometry = new BufferGeometry();
 
-        this.material = new MeshLambertMaterial({ color: 0x373F51 });
+        this.material = new MeshLambertMaterial({ color: colorHex });
+        this.colorHex = colorHex;
 
         this.mesh = new Mesh(this.geometry, this.material);
     }
 
     static getRandomBlock(spawnLocation: Vector3D): Block {
-        const { center, dimensions } = Block.blockTypes[randInt(0, Block.blockTypes.length - 1)];
-        return new Block(dimensions, { x: center[0], y: center[1], z: center[2] }, spawnLocation);
+        const { center, dimensions, colorHex } = Block.blockTypes[randInt(0, Block.blockTypes.length - 1)];
+        return new Block(dimensions, { x: center[0], y: center[1], z: center[2] }, spawnLocation, parseInt(colorHex, 16));
     }
 
     static async loadBlockDataFromJSON(data: BlockData[]) {
