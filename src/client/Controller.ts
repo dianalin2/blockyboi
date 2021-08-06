@@ -47,10 +47,46 @@ export class Controller {
                 isDown: false,
                 action: game.translateBlock.bind(game),
                 args: [1, 0]
+            },
+            {
+                key: 'ArrowLeft',
+                isDown: false,
+                action: game.rotateBlock.bind(game),
+                args: [{ x: 0, y: 90, z: 0 }]
+            },
+            {
+                key: 'ArrowRight',
+                isDown: false,
+                action: game.rotateBlock.bind(game),
+                args: [{ x: 0, y: -90, z: 0 }]
+            },
+            {
+                key: 'ArrowUp',
+                isDown: false,
+                action: game.rotateBlock.bind(game),
+                args: [{ x: 90, y: 0, z: 0 }]
+            },
+            {
+                key: 'ArrowDown',
+                isDown: false,
+                action: game.rotateBlock.bind(game),
+                args: [{ x: -90, y: 0, z: 0 }]
+            },
+            {
+                key: 'q',
+                isDown: false,
+                action: game.rotateBlock.bind(game),
+                args: [{ x: 0, y: 0, z: -90 }]
+            },
+            {
+                key: 'e',
+                isDown: false,
+                action: game.rotateBlock.bind(game),
+                args: [{ x: 0, y: 0, z: 90 }]
             }
         ];
 
-        setInterval(this.keyTick.bind(this), 100);
+        setInterval(this.keyTick.bind(this), 150);
     }
 
     keyTick() {

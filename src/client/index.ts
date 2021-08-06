@@ -28,34 +28,6 @@ Block.loadBlockDataFromJSON(data);
 
 const game = new Game({ x: 7, y: 12, z: 7 }, scene);
 
-// const updatePos = () => {
-//   for (const k of keysDown) {
-//     if (k.isDown) {
-//       switch (k.key) {
-//         case 'w':
-//           camera.translateOnAxis(new THREE.Vector3(0, 0, 1), -0.1);
-//           break;
-//         case 'a':
-//           camera.translateOnAxis(new THREE.Vector3(1, 0, 0), -0.1);
-//           break;
-//         case 's':
-//           camera.translateOnAxis(new THREE.Vector3(0, 0, 1), 0.1);
-//           break;
-//         case 'd':
-//           camera.translateOnAxis(new THREE.Vector3(1, 0, 0), 0.1);
-//           break;
-//         case 'q':
-//           camera.position.y += 0.1;
-//           break;
-//         case 'e':
-//           camera.position.y -= 0.1;
-//           break;
-//       }
-//     }
-//   }
-// }
-
-
 function addLight(x: number, y: number, z: number) {
   const color = 0xFFFFFF;
   const intensity = 1;

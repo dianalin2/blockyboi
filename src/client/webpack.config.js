@@ -33,12 +33,17 @@ module.exports = {
         path: path.resolve(__dirname, '../../dist/client')
     },
 
-    plugins: [
+    plugins: mode === 'development' ? [
+        new HtmlWebpackPlugin({
+            title: 'blockyboi (Development Build)',
+            template: path.resolve(__dirname, 'index.ejs')
+        }),
+        new WebpackBundleAnalyzer()
+    ] : [
         new HtmlWebpackPlugin({
             title: 'blockyboi',
             template: path.resolve(__dirname, 'index.ejs')
         }),
-        // new WebpackBundleAnalyzer()
     ],
 
     optimization: {

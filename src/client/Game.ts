@@ -51,7 +51,7 @@ export class Game {
         this.scene.add(this.world.mesh);
         this.scene.add(this.currentBlock.mesh);
 
-        setInterval(this.tick.bind(this), 300);
+        setInterval(this.tick.bind(this), 500);
 
         new Controller(this);
     }
@@ -70,22 +70,17 @@ export class Game {
     }
 
     tick() {
-        if (this.checkCurrentBlockLocation({x: 0, y: -1, z: 0})) {
-            for (let x = 0; x < this.currentBlock.dimensions.length; x++) {
-                for (let y = 0; y < this.currentBlock.dimensions[x].length; y++) {
-                    for (let z = 0; z < this.currentBlock.dimensions[x][y].length; z++) {
-                        if (!this.currentBlock.dimensions[x][y][z])
-                            continue;
-                        const cell = this.getCell({
-                            x: this.currentBlock.location.x + x,
-                            y: this.currentBlock.location.y + y,
-                            z: this.currentBlock.location.z + z
-                        });
-
-                        if (cell)
-                            cell.hasBlock = true;
-                    }
-                }
+        if (this.checkCurrentBlockLocation({ x: 0, y: -1, z: 0 })) {
+            for (const cell of this.currentBlock.cells) {
+                const { x, y, z } = cell.location;
+                const cellLocation = {
+                    x: this.currentBlock.location.x + x,
+                    y: this.currentBlock.location.y + y,
+                    z: this.currentBlock.location.z + z
+                };
+                const voxelCell = this.getCell(cellLocation);
+                if (voxelCell)
+                    voxelCell.hasBlock = true;
             }
 
             this.placeBlock();
@@ -96,26 +91,40 @@ export class Game {
 
     // Returns true if block would collide
     checkCurrentBlockLocation(offset: Vector3D) {
-        for (let x = 0; x < this.currentBlock.dimensions.length; x++) {
-            for (let y = 0; y < this.currentBlock.dimensions.length; y++) {
-                for (let z = 0; z < this.currentBlock.dimensions[x][y].length; z++) {
-                    const cellBelow = this.getCell({
-                        x: this.currentBlock.location.x + x + offset.x,
-                        y: this.currentBlock.location.y + y + offset.y,
-                        z: this.currentBlock.location.z + z + offset.z
-                    });
-                    if ((this.currentBlock.dimensions[x][y][z] && cellBelow && cellBelow.hasBlock) || this.currentBlock.location.y == 0) {
-                        return true;
-                    }
-                }
+        if (this.currentBlock.location.y + this.currentBlock.lowerBound.y + offset.y <= 0) {
+            return true;
+        }
+
+        for (const cell of this.currentBlock.cells) {
+            const { x, y, z } = cell.location;
+            const cellLocation = {
+                x: this.currentBlock.location.x + x + offset.x,
+                y: this.currentBlock.location.y + y + offset.y,
+                z: this.currentBlock.location.z + z + offset.z
+            };
+            const voxelCell = this.getCell(cellLocation);
+            if (voxelCell && voxelCell.hasBlock) {
+                return true;
             }
         }
 
         return false;
     }
 
-    rotateBlock() {
-        this.currentBlock.rotate();
+    rotateBlock(angle: Vector3D) {
+        this.currentBlock.rotate(angle);
+
+        const { x, y, z } = this.currentBlock.location;
+        const { x: minX, y: minY, z: minZ } = this.currentBlock.lowerBound;
+        const { x: maxX, y: maxY, z: maxZ } = this.currentBlock.upperBound;
+        this.currentBlock.location.x = Math.min(this.size.x - maxX - 1, Math.max(-minX, x));
+        this.currentBlock.location.y = Math.min(this.size.y - maxY - 1, Math.max(-minY, y));
+        this.currentBlock.location.z = Math.min(this.size.z - maxZ - 1, Math.max(-minZ, z));
+
+        if (this.checkCurrentBlockLocation({ x: 0, y: 0, z: 0 })) {
+            this.currentBlock.rotate({ x: -angle.x, y: -angle.y, z: -angle.z });
+            this.currentBlock.location = { x: x, y: y, z: z };
+        }
     }
 
     // Returns old block
@@ -132,18 +141,21 @@ export class Game {
         return oldBlock;
     }
 
-    blockIsInBounds(offsetX: number, offsetZ: number) {
-        const xPos = this.currentBlock.location.x + offsetX;
-        const xSize = this.currentBlock.dimensions.length;
+    isBlockInBounds(offsetX: number, offsetZ: number) {
+        const x = this.currentBlock.location.x + offsetX;
+        const y = this.currentBlock.location.y;
+        const z = this.currentBlock.location.z + offsetZ;
+        const { x: minX, y: minY, z: minZ } = this.currentBlock.lowerBound;
+        const { x: maxX, y: maxY, z: maxZ } = this.currentBlock.upperBound;
 
-        const zPos = this.currentBlock.location.z + offsetZ;
-        const zSize = this.currentBlock.dimensions[0][0].length;
+        if (x + minX < 0 || x + maxX >= this.size.x || z + minZ < 0 || z + maxZ >= this.size.z)
+            return false;
 
-        return xPos >= 0 && xPos + xSize < this.size.x && zPos >= 0 && zPos + zSize < this.size.z;
+        return true;
     }
 
     translateBlock(x: number, z: number) {
-        if (!this.checkCurrentBlockLocation({x: x, y: 0, z: z}) && this.blockIsInBounds(x, z)) {
+        if (!this.checkCurrentBlockLocation({ x: x, y: 0, z: z }) && this.isBlockInBounds(x, z)) {
             this.currentBlock.translate(x, z);
         }
     }
