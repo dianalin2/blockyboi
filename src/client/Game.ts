@@ -79,8 +79,7 @@ export class Game {
                     z: this.currentBlock.location.z + z
                 };
                 const voxelCell = this.getCell(cellLocation);
-                if (voxelCell) { 
-                    console.log(this.currentBlock.colorHex)
+                if (voxelCell) {
                     voxelCell.hasBlock = true;
                     voxelCell.colorHex = this.currentBlock.colorHex;
                 }
@@ -90,6 +89,38 @@ export class Game {
         } else {
             this.currentBlock.tick();
         }
+
+        for (let y = 0; y < this.size.y; y++) {
+            if (this.shouldClearLayer(y)) {
+                for (let yy = y; yy < this.size.y; yy++) {
+                    for (let x = 0; x < this.size.x; x++) {
+                        for (let z = 0; z < this.size.z; z++) {
+                            const cell = this.getCell({ x: x, y: yy, z: z});
+                            const cellAbove = this.getCell({x : x, y: yy + 1, z: z});
+                            if (!cellAbove) {
+                                cell.hasBlock = false;
+                            } else {
+                                cell.hasBlock = cellAbove.hasBlock;
+                                cell.colorHex = cellAbove.colorHex;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    shouldClearLayer(y: number) {
+        for (let x = 0; x < this.size.x; x++) {
+            for (let z = 0; z < this.size.z; z++) {
+                const cell = this.getCell({ x: x, y: y, z: z });
+                if (!cell || !cell.hasBlock) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     // Returns true if block would collide

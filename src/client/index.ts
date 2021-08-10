@@ -5,7 +5,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xA9BCD0);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 camera.updateProjectionMatrix();
 document.body.appendChild(renderer.domElement);
@@ -26,7 +26,7 @@ import data from './BlockData.json';
 import { Block } from "./Block";
 Block.loadBlockDataFromJSON(data);
 
-const game = new Game({ x: 7, y: 12, z: 7 }, scene);
+const game = new Game({ x: 4, y: 12, z: 4 }, scene);
 
 function addLight(x: number, y: number, z: number) {
   const color = 0xFFFFFF;
