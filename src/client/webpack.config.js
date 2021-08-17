@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackBundleAnalyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const mode = process.env.NODE_ENV || 'production';
 
@@ -25,6 +26,7 @@ module.exports = {
         rules: [
             { test: /\.tsx?$/, loader: 'ts-loader', exclude: /node_modules/, options: { configFile: path.resolve(__dirname, 'tsconfig.json') } },
             { test: /\.js$/, loader: 'source-map-loader', exclude: /node_modules/ },
+            { test: /\.css$/, use: [MiniCssExtractPlugin.loader, 'css-loader'] }
         ],
     },
 
@@ -36,14 +38,16 @@ module.exports = {
     plugins: mode === 'development' ? [
         new HtmlWebpackPlugin({
             title: 'blockyboi (Development Build)',
-            template: path.resolve(__dirname, 'index.ejs')
+            template: path.resolve(__dirname, 'index.ejs'),
         }),
+        new MiniCssExtractPlugin(),
         new WebpackBundleAnalyzer()
     ] : [
         new HtmlWebpackPlugin({
             title: 'blockyboi',
-            template: path.resolve(__dirname, 'index.ejs')
+            template: path.resolve(__dirname, 'index.ejs'),
         }),
+        new MiniCssExtractPlugin()
     ],
 
     optimization: {

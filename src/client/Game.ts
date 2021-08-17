@@ -1,7 +1,8 @@
 import { VoxelWorld } from "./VoxelWorld";
 import { Block } from "./Block";
-import { Scene } from "three";
+import { Scene, Object3D } from "three";
 import { Controller } from "./Controller";
+import { GUI } from "./GUI";
 
 export interface Vector3D {
     x: number;
@@ -24,8 +25,16 @@ export class Game {
     defaultSpawnLocation: Vector3D;
 
     scene: Scene;
+    gameObject: Object3D;
 
-    constructor(size: Vector3D, scene: Scene) {
+    gui: GUI;
+
+    score: number;
+    level: number;
+    lineNum: number;
+    totalLinesCleared: number;
+
+    constructor(size: Vector3D) {
         this.size = size;
         this.cells = new Array<Cell>(size.x * size.y * size.z);
         for (let z = 0; z < this.size.z; z++) {
@@ -47,13 +56,20 @@ export class Game {
 
         this.world = new VoxelWorld(this);
 
-        this.scene = scene;
-        this.scene.add(this.world.mesh);
-        this.scene.add(this.currentBlock.mesh);
+        this.gameObject = new Object3D();
+        this.gameObject.add(this.world.mesh);
+        this.gameObject.add(this.currentBlock.mesh);
 
         setInterval(this.tick.bind(this), 500);
 
         new Controller(this);
+
+        this.gui = new GUI('game-gui');
+
+        this.score = 0;
+        this.level = 0;
+        this.lineNum = 0;
+        this.totalLinesCleared = 0;
     }
 
     render() {
@@ -82,6 +98,8 @@ export class Game {
                 if (voxelCell) {
                     voxelCell.hasBlock = true;
                     voxelCell.colorHex = this.currentBlock.colorHex;
+                } else {
+                    console.log('lose');
                 }
             }
 
@@ -90,13 +108,16 @@ export class Game {
             this.currentBlock.tick();
         }
 
-        for (let y = 0; y < this.size.y; y++) {
+        let linesCleared = 0;
+        for (let y = this.size.y; y >= 0; y--) {
             if (this.shouldClearLayer(y)) {
+                linesCleared++;
+
                 for (let yy = y; yy < this.size.y; yy++) {
                     for (let x = 0; x < this.size.x; x++) {
                         for (let z = 0; z < this.size.z; z++) {
-                            const cell = this.getCell({ x: x, y: yy, z: z});
-                            const cellAbove = this.getCell({x : x, y: yy + 1, z: z});
+                            const cell = this.getCell({ x: x, y: yy, z: z });
+                            const cellAbove = this.getCell({ x: x, y: yy + 1, z: z });
                             if (!cellAbove) {
                                 cell.hasBlock = false;
                             } else {
@@ -108,6 +129,16 @@ export class Game {
                 }
             }
         }
+
+        // Update score
+        this.score += Game.calculateScore(linesCleared, this.level);
+        this.totalLinesCleared += linesCleared;
+        const { level, lineNum } = Game.calculateLevel(this.totalLinesCleared);
+        this.level = level;
+        this.lineNum = lineNum;
+
+        this.gui.updateScore(this.score);
+        this.gui.updateLevel(this.level, this.lineNum);
     }
 
     shouldClearLayer(y: number) {
@@ -165,12 +196,12 @@ export class Game {
     placeBlock() {
         // TODO DISPOSE
         const oldBlock = this.currentBlock;
-        this.scene.remove(this.currentBlock.mesh);
+        this.gameObject.remove(this.currentBlock.mesh);
 
         this.queue.push(Block.getRandomBlock(this.defaultSpawnLocation));
         this.currentBlock = this.queue.shift();
 
-        this.scene.add(this.currentBlock.mesh);
+        this.gameObject.add(this.currentBlock.mesh);
 
         return oldBlock;
     }
@@ -192,5 +223,17 @@ export class Game {
         if (!this.checkCurrentBlockLocation({ x: x, y: 0, z: z }) && this.isBlockInBounds(x, z)) {
             this.currentBlock.translate(x, z);
         }
+    }
+
+    static scores = [40, 100, 300, 1200]
+
+    static calculateScore(linesCleared: number, level: number) {
+        if (linesCleared < 1 || linesCleared > 4)
+            return 0;
+        return Game.scores[linesCleared - 1] * (level + 1);
+    }
+
+    static calculateLevel(lines: number) {
+        return { level: Math.floor(lines / 10), lineNum: lines % 10 };
     }
 }

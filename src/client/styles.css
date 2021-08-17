@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+}
+
+.game-gui {
+    padding: 3em 2em;
+    font-family: 'Rubik Mono One', sans-serif;
+    color: whitesmoke;
+}
+
+.game-gui span {
+    padding-left: 3em;
+    display: block;
+}
+
+.title {
+    transform: rotate(-10deg);
+    padding-bottom: 1em;
+}
