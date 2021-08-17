@@ -16,6 +16,12 @@ export interface Cell {
     colorHex: number;
 }
 
+enum GameState {
+    Menu,
+    InGame,
+    GameOver
+}
+
 export class Game {
     size: Vector3D;
     cells: Cell[];
@@ -33,6 +39,8 @@ export class Game {
     level: number;
     lineNum: number;
     totalLinesCleared: number;
+
+    gameState: GameState;
 
     constructor(size: Vector3D) {
         this.size = size;
@@ -70,6 +78,8 @@ export class Game {
         this.level = 0;
         this.lineNum = 0;
         this.totalLinesCleared = 0;
+
+        this.gameState = GameState.InGame;
     }
 
     render() {
@@ -86,6 +96,16 @@ export class Game {
     }
 
     tick() {
+        if (this.gameState == GameState.InGame)
+            this.gameTick();
+    }
+
+    lose() {
+        this.gameState = GameState.GameOver;
+        console.log('lose');
+    }
+
+    gameTick() {
         if (this.checkCurrentBlockLocation({ x: 0, y: -1, z: 0 })) {
             for (const cell of this.currentBlock.cells) {
                 const { x, y, z } = cell.location;
@@ -99,9 +119,11 @@ export class Game {
                     voxelCell.hasBlock = true;
                     voxelCell.colorHex = this.currentBlock.colorHex;
                 } else {
-                    console.log('lose');
+                    this.lose();
                 }
             }
+
+            this.world.shouldUpdateMesh = true;
 
             this.placeBlock();
         } else {
@@ -127,6 +149,8 @@ export class Game {
                         }
                     }
                 }
+
+                this.world.shouldUpdateMesh = true;
             }
         }
 

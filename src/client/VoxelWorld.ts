@@ -8,6 +8,8 @@ export class VoxelWorld {
     material: MeshLambertMaterial;
     mesh: Mesh;
 
+    shouldUpdateMesh: boolean;
+
     static faces = [
         {
             // Left
@@ -78,9 +80,14 @@ export class VoxelWorld {
         this.geometry = new BufferGeometry();
         this.material = new MeshLambertMaterial({ vertexColors: true });
         this.mesh = new Mesh(this.geometry, this.material);
+
+        this.shouldUpdateMesh = true;
     }
 
     render() {
+        if (!this.shouldUpdateMesh)
+            return;
+
         // TODO DISPOSE
         const { positions, normals, indices, colors } = this.generateGeometryData();
 
@@ -99,6 +106,8 @@ export class VoxelWorld {
         );
 
         this.geometry.setIndex(indices);
+
+        this.shouldUpdateMesh = false;
     }
 
     generateGeometryData() {
