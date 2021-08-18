@@ -15,6 +15,8 @@ export class GUI {
         this.parentElement.appendChild(this.rootElement);
 
         this.rootElement.style.position = 'absolute';
+        this.rootElement.style.top = '0';
+        this.rootElement.style.left = '0';
 
         const title = document.createElement('h1');
         title.innerText = 'bloktris';

@@ -1,11 +1,19 @@
 * {
     margin: 0;
+    box-sizing: border-box;
+}
+
+
+.game {
+    font-family: 'Rubik Mono One', sans-serif;
+    color: whitesmoke;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
 }
 
 .game-gui {
-    padding: 3em 2em;
-    font-family: 'Rubik Mono One', sans-serif;
-    color: whitesmoke;
+    padding: 2em;
 }
 
 .game-gui span {
@@ -16,4 +24,39 @@
 .title {
     transform: rotate(-10deg);
     padding-bottom: 1em;
+}
+
+.game-menu {
+    width: fit-content;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 2em;
+    justify-content: center;
+}
+
+.hidden {
+    display: hidden;
+}
+
+.game-menu button {
+    padding: 1em 3em;
+    font-family: inherit;
+    background-color: black;
+    color: whitesmoke;
+    border: 1px whitesmoke solid;
+    border-radius: 1em;
+    outline: none;
+    box-shadow: 0px 0px 5px 0px;
+    transition: color 1s, background-color 0.5s;
+}
+
+.game-menu button:hover {
+    cursor: pointer;
+    box-shadow: 0px 0px 10px 0px;
+    background-color: whitesmoke;
+    color: black;
 }

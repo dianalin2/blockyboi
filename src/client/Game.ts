@@ -72,7 +72,7 @@ export class Game {
 
         new Controller(this);
 
-        this.gui = new GUI('game-gui');
+        this.gui = new GUI('game');
 
         this.score = 0;
         this.level = 0;
@@ -98,6 +98,10 @@ export class Game {
     tick() {
         if (this.gameState == GameState.InGame)
             this.gameTick();
+    }
+
+    showMenu() {
+
     }
 
     lose() {
