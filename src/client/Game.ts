@@ -3,6 +3,7 @@ import { Block } from "./Block";
 import { Scene, Object3D } from "three";
 import { Controller } from "./Controller";
 import { GUI } from "./GUI";
+import { Menu } from "./Menu";
 
 export interface Vector3D {
     x: number;
@@ -79,7 +80,9 @@ export class Game {
         this.lineNum = 0;
         this.totalLinesCleared = 0;
 
-        this.gameState = GameState.InGame;
+        this.gameState = GameState.Menu;
+
+        new Menu('game', this);
     }
 
     render() {
@@ -100,13 +103,12 @@ export class Game {
             this.gameTick();
     }
 
-    showMenu() {
-
+    play() {
+        this.gameState = GameState.InGame;
     }
 
     lose() {
         this.gameState = GameState.GameOver;
-        console.log('lose');
     }
 
     gameTick() {
