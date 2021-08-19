@@ -27,7 +27,7 @@ export class Block {
 
     colorHex: number;
 
-    constructor(dimensions: number[][][], center: Vector3D, spawnLocation: Vector3D, colorHex: number) {
+    constructor(dimensions: number[][][], center: Vector3D, spawnLocation: Vector3D, colorHex: number, opacity = 1) {
         let minX = Infinity, maxX = -Infinity;
         let minY = Infinity, maxY = -Infinity;
         let minZ = Infinity, maxZ = -Infinity;
@@ -62,7 +62,7 @@ export class Block {
 
         this.geometry = new BufferGeometry();
 
-        this.material = new MeshLambertMaterial({ color: colorHex });
+        this.material = new MeshLambertMaterial({ color: colorHex, opacity: opacity });
         this.colorHex = colorHex;
 
         this.mesh = new Mesh(this.geometry, this.material);
@@ -77,6 +77,10 @@ export class Block {
         this.blockTypes = data;
     }
 
+    static serializeCell(cell: Cell) {
+        return `${cell.location.x}-${cell.location.y}-${cell.location.z}`;
+    }
+
     generateGeometryData() {
         const positions = [];
         const normals = [];
@@ -87,21 +91,25 @@ export class Block {
                 const nX = cell.location.x + dir.x;
                 const nY = cell.location.y + dir.y;
                 const nZ = cell.location.z + dir.z;
-
-                // let neighbor;
-                // if (nX >= this.size.x || nX < 0 || nY >= this.size.y || nY < 0 || nZ >= this.size.z || nZ < 0)
-                //     neighbor = undefined;
-                // else
-                //     neighbor = this.dimensions[nX][nY][nZ];
-
-                // Create face
-                const ndx = positions.length / 3;
-                for (const pos of corners) {
-                    positions.push(pos.x + cell.location.x + this.location.x, pos.y + cell.location.y + this.location.y, pos.z + cell.location.z + this.location.z);
-                    normals.push(dir.x, dir.y, dir.z);
+                
+                let hasNeighbor = false;
+                for (const possN of this.cells) {
+                    if (possN.location.x == nX && possN.location.y == nY && possN.location.z == nZ) {
+                        hasNeighbor = true;
+                        break;
+                    }
                 }
 
-                indices.push(ndx, ndx + 1, ndx + 2, ndx + 2, ndx + 1, ndx + 3);
+                if (!hasNeighbor) {
+                    // Create face
+                    const ndx = positions.length / 3;
+                    for (const pos of corners) {
+                        positions.push(pos.x + cell.location.x + this.location.x, pos.y + cell.location.y + this.location.y, pos.z + cell.location.z + this.location.z);
+                        normals.push(dir.x, dir.y, dir.z);
+                    }
+
+                    indices.push(ndx, ndx + 1, ndx + 2, ndx + 2, ndx + 1, ndx + 3);
+                }
             }
         }
 
