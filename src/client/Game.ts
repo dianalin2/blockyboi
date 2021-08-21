@@ -71,8 +71,6 @@ export class Game {
 
         setInterval(this.tick.bind(this), 500);
 
-        new Controller(this);
-
         this.gui = new GUI('game');
 
         this.score = 0;
@@ -105,32 +103,22 @@ export class Game {
 
     play() {
         this.gameState = GameState.InGame;
+        new Controller(this);
     }
 
     lose() {
         this.gameState = GameState.GameOver;
     }
 
+    hardDrop() {
+        while (!this.checkCurrentBlockLocation({ x: 0, y: -1, z: 0 })) {
+            this.currentBlock.location.y--;
+        }
+        this.gameTick();
+    }
+
     gameTick() {
         if (this.checkCurrentBlockLocation({ x: 0, y: -1, z: 0 })) {
-            for (const cell of this.currentBlock.cells) {
-                const { x, y, z } = cell.location;
-                const cellLocation = {
-                    x: this.currentBlock.location.x + x,
-                    y: this.currentBlock.location.y + y,
-                    z: this.currentBlock.location.z + z
-                };
-                const voxelCell = this.getCell(cellLocation);
-                if (voxelCell) {
-                    voxelCell.hasBlock = true;
-                    voxelCell.colorHex = this.currentBlock.colorHex;
-                } else {
-                    this.lose();
-                }
-            }
-
-            this.world.shouldUpdateMesh = true;
-
             this.placeBlock();
         } else {
             this.currentBlock.tick();
@@ -224,6 +212,24 @@ export class Game {
 
     // Returns old block
     placeBlock() {
+        for (const cell of this.currentBlock.cells) {
+            const { x, y, z } = cell.location;
+            const cellLocation = {
+                x: this.currentBlock.location.x + x,
+                y: this.currentBlock.location.y + y,
+                z: this.currentBlock.location.z + z
+            };
+            const voxelCell = this.getCell(cellLocation);
+            if (voxelCell) {
+                voxelCell.hasBlock = true;
+                voxelCell.colorHex = this.currentBlock.colorHex;
+            } else {
+                this.lose();
+            }
+        }
+
+        this.world.shouldUpdateMesh = true;
+
         // TODO DISPOSE
         const oldBlock = this.currentBlock;
         this.gameObject.remove(this.currentBlock.mesh);

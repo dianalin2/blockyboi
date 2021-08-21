@@ -12,7 +12,9 @@ export class Controller {
     keysDown: KeyData[];
 
     constructor(game: Game) {
+        console.log('here');
         document.addEventListener('keydown', (e) => {
+            console.log(e.key)
             const k = this.keysDown.filter(v => e.key == v.key)[0];
             if (!k || k.currentInterval)
                 return;
@@ -99,6 +101,13 @@ export class Controller {
                 isDown: false,
                 action: game.rotateBlock.bind(game),
                 args: [{ x: 0, y: 0, z: 90 }],
+                currentInterval: null
+            },
+            {
+                key: ' ',
+                isDown: false,
+                action: game.hardDrop.bind(game),
+                args: [],
                 currentInterval: null
             }
         ];
