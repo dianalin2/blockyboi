@@ -22,7 +22,7 @@
   "homepage": "https://github.com/dianalin2/blockyboi#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "three": "^0.131.0"
+    "three": "^0.142.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
